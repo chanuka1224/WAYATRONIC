@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WayaTronic Admin Suite | Operations &amp; Inventory Management</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- ADMIN LOGIN SECTION (If not authenticated) -->
+  <section id="adminLoginSection" class="admin-auth-screen" style="display: none;">
+    <div class="admin-auth-box">
+      <img src="assets/logo.svg" alt="WayaTronic Admin" class="admin-auth-logo" />
+      <h2>WayaTronic Admin Portal</h2>
+      <p class="admin-auth-subtitle">Authorized laboratory inventory &amp; operations control.</p>
+
+      <div id="adminLoginError" class="error-banner" style="display: none;"></div>
+
+      <form id="adminLoginForm">
+        <div class="form-group text-left" style="text-align: left;">
+          <label>Administrator Username</label>
+          <input type="text" id="adminUsernameInput" class="form-control" value="Admin" required autocomplete="username" />
+        </div>
+        <div class="form-group text-left" style="text-align: left;">
+          <label>Password</label>
+          <input type="password" id="adminPasswordInput" class="form-control" value="Admin123@" required autocomplete="current-password" />
+        </div>
+        
+        <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 6px; padding: 0.65rem; font-size: 0.775rem; color: var(--brand-cyan); margin-bottom: 1.5rem; text-align: left;">
+          <strong>Development Credentials:</strong><br />
+          Username: <code>Admin</code><br />
+          Password: <code>Admin123@</code><br />
+          <em>(Security notice: You will be forced to change this default password upon initial sign in)</em>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Secure Administrator Login</button>
+        <a href="index.html" class="btn btn-secondary btn-block btn-sm" style="margin-top: 1rem;">← Return to Customer Storefront</a>
+      </form>
+    </div>
+  </section>
+
+  <!-- FORCE PASSWORD CHANGE SCREEN (Mandatory on First Login) -->
+  <section id="adminForcePasswordSection" class="admin-auth-screen" style="display: none;">
+    <div class="admin-auth-box">
+      <img src="assets/logo.svg" alt="WayaTronic Admin" class="admin-auth-logo" />
+      <h2 style="color: var(--color-warning);">⚠️ Initial Security Requirement</h2>
+      <p class="admin-auth-subtitle">Welcome, <strong id="forcePasswordAdminUser">Admin</strong>. Per enterprise security protocols, you must replace the default development password before accessing management tools.</p>
+
+      <div id="adminForcePassError" class="error-banner" style="display: none;"></div>
+
+      <form id="adminForcePasswordForm">
+        <div class="form-group text-left" style="text-align: left;">
+          <label>New Secure Administrator Password * (min 8 chars)</label>
+          <input type="password" id="newAdminPass1" class="form-control" required placeholder="Enter strong new password" />
+        </div>
+        <div class="form-group text-left" style="text-align: left;">
+          <label>Confirm New Password *</label>
+          <input type="password" id="newAdminPass2" class="form-control" required placeholder="Repeat new password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Update Password &amp; Unlock Dashboard</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- MAIN ADMIN DASHBOARD WORKSPACE (Authenticated) -->
+  <div id="adminMainDashboard" class="admin-layout" style="display: none;">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <div class="admin-sidebar-brand">
+          <img src="assets/logo.svg" alt="WayaTronic Logo" />
+          <span class="admin-sidebar-badge">ADMIN</span>
+        </div>
+      </div>
+
+      <nav class="admin-nav-list">
+        <div class="admin-nav-item active" data-view="dashboard" onclick="window.WayaAdmin.switchAdminView('dashboard');">
+          <span class="admin-nav-icon">📊</span>
+          <span>Dashboard &amp; Stats</span>
+        </div>
+        <div class="admin-nav-item" data-view="products" onclick="window.WayaAdmin.switchAdminView('products');">
+          <span class="admin-nav-icon">🔬</span>
+          <span>Product Inventory</span>
+        </div>
+        <div class="admin-nav-item" data-view="categories" onclick="window.WayaAdmin.switchAdminView('categories');">
+          <span class="admin-nav-icon">📁</span>
+          <span>Categories (12)</span>
+        </div>
+        <div class="admin-nav-item" data-view="orders" onclick="window.WayaAdmin.switchAdminView('orders');">
+          <span class="admin-nav-icon">📦</span>
+          <span>Customer Orders</span>
+        </div>
+        <div class="admin-nav-item" data-view="customers" onclick="window.WayaAdmin.switchAdminView('customers');">
+          <span class="admin-nav-icon">👥</span>
+          <span>Registered Customers</span>
+        </div>
+        <div class="admin-nav-item" data-view="admins" onclick="window.WayaAdmin.switchAdminView('admins');">
+          <span class="admin-nav-icon">🛡️</span>
+          <span>Admin Accounts</span>
+        </div>
+        <div class="admin-nav-item" data-view="messages" onclick="window.WayaAdmin.switchAdminView('messages');">
+          <span class="admin-nav-icon">✉️</span>
+          <span>Inquiries &amp; RFQs</span>
+        </div>
+        <div class="admin-nav-item" data-view="settings" onclick="window.WayaAdmin.switchAdminView('settings');">
+          <span class="admin-nav-icon">⚙️</span>
+          <span>Store Settings &amp; Bank</span>
+        </div>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <div class="admin-user-card">
+          <div class="admin-user-info">
+            <strong id="adminCurrentName">Administrator</strong>
+            <span id="adminCurrentRole">Super Admin</span>
+          </div>
+          <button class="btn-admin-logout" onclick="window.WayaAuth.logoutAdmin(); location.reload();" title="Sign Out">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+        <div style="margin-top: 0.75rem;">
+          <a href="index.html" target="_blank" class="view-all-link" style="font-size: 0.75rem;">↗ View Live Customer Website</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="admin-main">
+      <header class="admin-top-bar">
+        <h2 id="adminHeaderViewTitle" class="admin-view-title">Operations Dashboard</h2>
+        <div class="action-btn-group">
+          <button class="btn btn-secondary btn-sm" onclick="window.WayaAdmin.exportDb();">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Backup DB (JSON)</span>
+          </button>
+          <label class="btn btn-secondary btn-sm" style="cursor: pointer; margin: 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Restore DB</span>
+            <input type="file" accept=".json" style="display: none;" onchange="window.WayaAdmin.importDb(event);" />
+          </label>
+          <button class="btn btn-danger btn-sm" onclick="window.WayaAdmin.resetDb();" title="Factory Reset">
+            <span>Reset Defaults</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-content-pane">
+
+        <!-- TAB PANE 1: DASHBOARD -->
+        <div id="adminPane_dashboard" class="admin-tab-pane">
+          <!-- 6 Summary Stat Cards Required -->
+          <div class="admin-stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-blue">🔬</div>
+              <div class="stat-details">
+                <div class="stat-label">Total Products</div>
+                <div class="stat-value" id="dashStatProducts">0</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-cyan">👥</div>
+              <div class="stat-details">
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value" id="dashStatCustomers">0</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-purple">📦</div>
+              <div class="stat-details">
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value" id="dashStatOrders">0</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-green">💰</div>
+              <div class="stat-details">
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value" id="dashStatRevenue">LKR 0</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-yellow">⏳</div>
+              <div class="stat-details">
+                <div class="stat-label">Pending Orders</div>
+                <div class="stat-value" id="dashStatPending">0</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon stat-icon-red">⚠️</div>
+              <div class="stat-details">
+                <div class="stat-label">Low Stock Products</div>
+                <div class="stat-value" id="dashStatLowStock">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Charts -->
+          <div class="admin-charts-grid">
+            <div class="chart-card">
+              <h3>Monthly Instrument Sales Revenue (LKR)</h3>
+              <div id="dashRevenueChart"></div>
+            </div>
+            <div class="chart-card">
+              <h3>Inventory Distribution by Category</h3>
+              <div id="dashCategoryChart"></div>
+            </div>
+          </div>
+
+          <!-- Recent Orders & Low Stock Tables -->
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1.5rem;">
+            <div class="admin-card-table">
+              <div class="admin-table-header">
+                <h3>Recent Customer Orders</h3>
+                <button class="btn btn-secondary btn-xs" onclick="window.WayaAdmin.switchAdminView('orders');">View All Orders →</button>
+              </div>
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dashRecentOrdersBody"></tbody>
+              </table>
+            </div>
+
+            <div class="admin-card-table">
+              <div class="admin-table-header">
+                <h3 class="text-danger">Low Stock Warnings</h3>
+                <button class="btn btn-secondary btn-xs" onclick="window.WayaAdmin.switchAdminView('products');">Manage Inventory →</button>
+              </div>
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dashLowStockBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB PANE 2: PRODUCTS INVENTORY -->
+        <div id="adminPane_products" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table">
+            <div class="admin-table-header">
+              <div class="admin-table-filters">
+                <input type="text" id="adminProductSearch" class="form-control form-control-sm" placeholder="Search product, model, SKU..." style="width: 260px;" />
+                <select id="adminProductCategoryFilter" class="form-control form-control-sm" style="width: 200px;">
+                  <option value="all">All Categories</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="window.WayaAdmin.openAddProductModal();">
+                <span>+ Add New Product</span>
+              </button>
+            </div>
+
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>SKU</th>
+                  <th>Category</th>
+                  <th>Price (LKR)</th>
+                  <th>Stock</th>
+                  <th>Badges</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminProductsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB PANE 3: CATEGORIES (12 CATEGORIES) -->
+        <div id="adminPane_categories" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table">
+            <div class="admin-table-header">
+              <h3>Product Categories (12 Mandatory Departments)</h3>
+              <button class="btn btn-primary btn-sm" onclick="window.WayaAdmin.openAddCategoryModal();">+ Add Category</button>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Slug</th>
+                  <th>Description</th>
+                  <th>Assigned Products</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminCategoriesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB PANE 4: CUSTOMER ORDERS -->
+        <div id="adminPane_orders" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table">
+            <div class="admin-table-header">
+              <div class="admin-table-filters">
+                <label>Filter Status:</label>
+                <select id="adminOrderStatusFilter" class="form-control form-control-sm" style="width: 180px;">
+                  <option value="all">All Statuses</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                  <th>Total (LKR)</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminOrdersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB PANE 5: REGISTERED CUSTOMERS -->
+        <div id="adminPane_customers" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table">
+            <div class="admin-table-header">
+              <h3>Registered Customers Database</h3>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>District / City</th>
+                  <th>Total Orders</th>
+                  <th>Lifetime Spend</th>
+                  <th>Status / Action</th>
+                </tr>
+              </thead>
+              <tbody id="adminCustomersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB PANE 6: ADMIN ACCOUNTS -->
+        <div id="adminPane_admins" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table">
+            <div class="admin-table-header">
+              <h3>Administrator Access &amp; Role Permissions</h3>
+              <button class="btn btn-primary btn-sm" onclick="window.WayaAdmin.openCreateAdminModal();">+ Create Admin Account</button>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminAccountsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB PANE 7: MESSAGES & RFQS -->
+        <div id="adminPane_messages" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table">
+            <div class="admin-table-header">
+              <h3>Customer Inquiry Messages &amp; Bulk RFQs</h3>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>Sender</th>
+                  <th>Subject</th>
+                  <th>Message Preview</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="adminMessagesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB PANE 8: STORE SETTINGS -->
+        <div id="adminPane_settings" class="admin-tab-pane" style="display: none;">
+          <div class="admin-card-table" style="padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">WayaTronic Store Configuration &amp; Payment Setup</h3>
+            <form onsubmit="window.WayaAdmin.saveSettings(event);">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Business Name</label>
+                  <input type="text" id="settingsStoreName" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>Tagline</label>
+                  <input type="text" id="settingsTagline" class="form-control" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Homepage Top Announcement Banner</label>
+                <input type="text" id="settingsAnnouncement" class="form-control" required />
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Hotline Telephone</label>
+                  <input type="text" id="settingsPhone" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>Business Email</label>
+                  <input type="email" id="settingsEmail" class="form-control" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Physical Address (Sri Lanka)</label>
+                <input type="text" id="settingsAddress" class="form-control" required />
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Free Shipping Threshold (LKR)</label>
+                  <input type="number" id="settingsFreeShippingThreshold" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>Standard Shipping Fee (LKR)</label>
+                  <input type="number" id="settingsStandardShippingFee" class="form-control" required />
+                </div>
+              </div>
+
+              <h4 style="margin: 1.5rem 0 1rem; color: var(--brand-cyan);">Corporate Bank Account Details (Displayed for Direct Bank Transfer)</h4>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Bank Name</label>
+                  <input type="text" id="settingsBankName" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>Account Name</label>
+                  <input type="text" id="settingsAccountName" class="form-control" required />
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Account Number</label>
+                  <input type="text" id="settingsAccountNumber" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>Branch</label>
+                  <input type="text" id="settingsBranch" class="form-control" required />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 1rem;">Save All Store Settings</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Product Add / Edit Modal -->
+  <div id="adminProductModal" class="modal-overlay">
+    <div class="modal-dialog modal-dialog-md">
+      <button class="modal-close-btn" onclick="window.WayaAdmin.closeProductModal();">✕</button>
+      <div class="modal-body">
+        <h3 id="adminProductModalTitle" style="margin-bottom: 1.5rem;">Add New Product</h3>
+        <form id="adminProductForm" onsubmit="window.WayaAdmin.saveProduct(event);">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Product Name *</label>
+              <input type="text" id="prodModalName" class="form-control" required placeholder="e.g. WT-6000 Pro DMM" />
+            </div>
+            <div class="form-group">
+              <label>Category *</label>
+              <select id="prodModalCategory" class="form-control" required></select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Brand *</label>
+              <input type="text" id="prodModalBrand" class="form-control" required placeholder="WayaTronic, Rigol, UNI-T" />
+            </div>
+            <div class="form-group">
+              <label>Model Number *</label>
+              <input type="text" id="prodModalModel" class="form-control" required placeholder="WT-6000P" />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>SKU (Stock Keeping Unit) *</label>
+              <input type="text" id="prodModalSKU" class="form-control" required placeholder="WT-DMM-6001" />
+            </div>
+            <div class="form-group">
+              <label>Inventory Stock Quantity *</label>
+              <input type="number" id="prodModalStock" class="form-control" required min="0" placeholder="10" />
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Regular Price in LKR *</label>
+              <input type="number" id="prodModalPrice" class="form-control" required min="1" placeholder="24500" />
+            </div>
+            <div class="form-group">
+              <label>Discount Price in LKR (Optional)</label>
+              <input type="number" id="prodModalDiscountPrice" class="form-control" min="0" placeholder="21900" />
+            </div>
+          </div>
+
+          <!-- Product Image Upload -->
+          <div class="form-group">
+            <label>Product Image Upload (JPG, PNG, SVG or WebP):</label>
+            <input type="file" id="prodModalImageInput" class="form-control" accept="image/*" multiple onchange="window.WayaAdmin.handleProductImageUpload(event);" />
+            <div id="prodModalImagePreview" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Product Description *</label>
+            <textarea id="prodModalDescription" class="form-control" rows="3" required placeholder="Detailed specifications, safety ratings, included probes..."></textarea>
+          </div>
+
+          <!-- Specifications Builder -->
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <label style="margin:0;">Product Technical Specifications</label>
+              <button type="button" class="btn btn-secondary btn-xs" onclick="window.WayaAdmin.addSpecRow();">+ Add Spec Row</button>
+            </div>
+            <div id="specsContainer"></div>
+          </div>
+
+          <!-- Homepage Display Flags -->
+          <div style="display:flex; gap:1.5rem; margin:1rem 0 1.5rem;">
+            <label class="filter-checkbox-label"><input type="checkbox" id="prodModalFeatured" /> <span>Featured Product</span></label>
+            <label class="filter-checkbox-label"><input type="checkbox" id="prodModalBestSeller" /> <span>Best Seller</span></label>
+            <label class="filter-checkbox-label"><input type="checkbox" id="prodModalNewArrival" /> <span>New Arrival</span></label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Save Product to Inventory</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Add / Edit Modal -->
+  <div id="adminCategoryModal" class="modal-overlay">
+    <div class="modal-dialog modal-dialog-sm">
+      <button class="modal-close-btn" onclick="window.WayaAdmin.closeCategoryModal();">✕</button>
+      <div class="modal-body">
+        <h3 id="adminCategoryModalTitle" style="margin-bottom: 1.5rem;">Add Category</h3>
+        <form id="adminCategoryForm" onsubmit="window.WayaAdmin.saveCategory(event);">
+          <div class="form-group">
+            <label>Category Name *</label>
+            <input type="text" id="catModalName" class="form-control" required placeholder="e.g. Spectrum Analyzers" />
+          </div>
+          <div class="form-group">
+            <label>URL Slug</label>
+            <input type="text" id="catModalSlug" class="form-control" placeholder="e.g. spectrum-analyzers" />
+          </div>
+          <div class="form-group">
+            <label>Icon Asset</label>
+            <select id="catModalIcon" class="form-control">
+              <option value="multimeter.svg">multimeter.svg</option>
+              <option value="oscilloscope.svg">oscilloscope.svg</option>
+              <option value="clamp_meter.svg">clamp_meter.svg</option>
+              <option value="power_supply.svg">power_supply.svg</option>
+              <option value="function_gen.svg">function_gen.svg</option>
+              <option value="soldering_station.svg">soldering_station.svg</option>
+              <option value="test_kit.svg">test_kit.svg</option>
+              <option value="microcontroller.svg">microcontroller.svg</option>
+              <option value="sensors.svg">sensors.svg</option>
+              <option value="components.svg">components.svg</option>
+              <option value="test_leads.svg">test_leads.svg</option>
+              <option value="accessories.svg">accessories.svg</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Short Description</label>
+            <textarea id="catModalDescription" class="form-control" rows="2" placeholder="Brief overview of items in this department..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Save Category</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Order Details & Status Modal -->
+  <div id="adminOrderModal" class="modal-overlay">
+    <div class="modal-dialog modal-dialog-md">
+      <button class="modal-close-btn" onclick="window.WayaAdmin.closeOrderModal();">✕</button>
+      <div class="modal-body" id="adminOrderModalContent"></div>
+    </div>
+  </div>
+
+  <!-- Create Admin Modal -->
+  <div id="adminCreateAdminModal" class="modal-overlay">
+    <div class="modal-dialog modal-dialog-sm">
+      <button class="modal-close-btn" onclick="window.WayaAdmin.closeCreateAdminModal();">✕</button>
+      <div class="modal-body">
+        <h3 style="margin-bottom: 1.5rem;">Create New Administrator</h3>
+        <form id="adminCreateAdminForm" onsubmit="window.WayaAdmin.saveNewAdmin(event);">
+          <div class="form-group">
+            <label>Username *</label>
+            <input type="text" id="newAdminUsername" class="form-control" required placeholder="e.g. kasun_lab" />
+          </div>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="newAdminFullName" class="form-control" placeholder="Kasun Senarath" />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="newAdminEmail" class="form-control" placeholder="kasun@wayatronic.lk" />
+          </div>
+          <div class="form-group">
+            <label>Assigned Role *</label>
+            <select id="newAdminRole" class="form-control" required>
+              <option value="Super Admin">Super Admin (Full Access)</option>
+              <option value="Inventory Manager">Inventory Manager (Stock &amp; Catalog)</option>
+              <option value="Order Dispatcher">Order Dispatcher (Orders &amp; Shipping)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Initial Secure Password * (min 8 chars)</label>
+            <input type="password" id="newAdminPassword" class="form-control" required placeholder="••••••••" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create Admin Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Core JavaScript Modules -->
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/checkout.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    // Initialize App & Admin on DOM ready
+    window.WayaApp = {
+      showToast(msg, type = 'info') {
+        const c = document.getElementById('toastContainer');
+        if (!c) return;
+        const t = document.createElement('div');
+        t.className = `toast toast-${type}`;
+        t.innerHTML = `<span class="toast-icon">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span><span class="toast-message">${msg}</span>`;
+        c.appendChild(t);
+        setTimeout(() => t.classList.add('show'), 10);
+        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+      }
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+      window.WayaAdmin.init();
+    });
+  </script>
+</body>
+</html>

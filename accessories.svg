@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <rect width="400" height="400" rx="16" fill="#0d1424"/>
+  <!-- Anti-static ESD Mat & Precision Tweezers & Wire Cutters -->
+  <!-- Blue Silicone ESD Work Mat -->
+  <rect x="50" y="90" width="300" height="220" rx="10" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+  <!-- Ruler grid markings on mat -->
+  <line x1="60" y1="105" x2="340" y2="105" stroke="#bae6fd" stroke-width="1"/>
+  <line x1="70" y1="100" x2="70" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="100" y1="100" x2="100" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="130" y1="100" x2="130" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="160" y1="100" x2="160" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="190" y1="100" x2="190" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="220" y1="100" x2="220" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+  <line x1="250" y1="100" x2="250" y2="105" stroke="#bae6fd" stroke-width="1.5"/>
+
+  <!-- Magnetic Screwdriver with interchangeable bits -->
+  <rect x="90" y="150" width="140" height="18" rx="9" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+  <rect x="80" y="152" width="25" height="14" rx="4" fill="#3b82f6"/> <!-- Rotating cap -->
+  <rect x="230" y="156" width="35" height="6" fill="#cbd5e1"/>
+  <polygon points="265,155 275,159 265,163" fill="#94a3b8"/> <!-- Phillips Bit -->
+
+  <!-- Precision Curved Tweezers ESD-15 -->
+  <path d="M 120 220 C 180 200, 260 210, 290 235 C 280 232, 210 215, 120 224 Z" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+  <path d="M 120 228 C 180 248, 260 238, 290 235 C 280 238, 210 255, 120 232 Z" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+
+  <!-- ESD Wrist Strap with coiled ground cord -->
+  <rect x="250" y="250" width="75" height="24" rx="6" fill="#0284c7" stroke="#bae6fd" stroke-width="2"/>
+  <text x="287" y="266" font-family="sans-serif" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">ESD SAFE</text>
+  <path d="M 250 262 Q 220 280, 200 260 T 170 280" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Small parts organizing compartments on mat -->
+  <rect x="65" y="120" width="40" height="22" rx="3" fill="#0369a1"/>
+  <rect x="65" y="150" width="40" height="22" rx="3" fill="#0369a1"/>
+  <rect x="65" y="180" width="40" height="22" rx="3" fill="#0369a1"/>
+
+  <text x="200" y="340" font-family="sans-serif" font-size="10" font-weight="800" fill="#f8fafc" text-anchor="middle">WAYATRONIC BENCH ACCESSORIES &amp; ESD PROTECTION</text>
+</svg>

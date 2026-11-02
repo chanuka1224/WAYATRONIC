@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <rect width="400" height="400" rx="16" fill="#0b1220"/>
+  <!-- Oscilloscope High Voltage Probes and Crocodile Clips -->
+  <!-- Red Probe -->
+  <path d="M 80 80 Q 140 180, 200 130 T 320 220" fill="none" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>
+  <!-- Probe Body Red -->
+  <rect x="250" y="210" width="80" height="20" rx="10" transform="rotate(35 290 220)" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+  <polygon points="345,260 365,275 350,285" fill="#f8fafc"/>
+  <line x1="365" y1="275" x2="385" y2="290" stroke="#cbd5e1" stroke-width="2.5"/> <!-- Sharp Gold Tip -->
+
+  <!-- Black Probe -->
+  <path d="M 80 120 Q 120 240, 180 200 T 260 320" fill="none" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 80 120 Q 120 240, 180 200 T 260 320" fill="none" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <!-- Black Probe Body -->
+  <rect x="220" y="280" width="80" height="20" rx="10" transform="rotate(25 260 290)" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+  <polygon points="305,320 325,330 315,340" fill="#f8fafc"/>
+  <line x1="325" y1="330" x2="345" y2="340" stroke="#cbd5e1" stroke-width="2.5"/>
+
+  <!-- Banana Plugs on the left -->
+  <rect x="50" y="70" width="35" height="18" rx="4" fill="#dc2626"/>
+  <rect x="30" y="74" width="20" height="10" rx="2" fill="#cbd5e1"/>
+  <rect x="50" y="110" width="35" height="18" rx="4" fill="#0f172a"/>
+  <rect x="30" y="114" width="20" height="10" rx="2" fill="#cbd5e1"/>
+
+  <!-- Crocodile Clip accessory -->
+  <path d="M 120 290 L 150 280 L 170 300 L 140 310 Z" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/>
+  <rect x="100" y="285" width="25" height="15" rx="3" fill="#ef4444"/>
+
+  <text x="200" y="55" font-family="sans-serif" font-size="11" font-weight="800" fill="#f8fafc" text-anchor="middle">WAYATRONIC CAT III 1000V TEST PROBES</text>
+  <text x="200" y="70" font-family="sans-serif" font-size="8" font-weight="600" fill="#00f2fe" text-anchor="middle">Gold-Plated Needle Tips &amp; Alligator Clips</text>
+</svg>
